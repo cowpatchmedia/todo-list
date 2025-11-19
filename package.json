@@ -1,7 +1,7 @@
 {
-  "name": "webpack-restaurant",
+  "name": "todo-list",
   "version": "1.0.0",
-  "description": "Project to build a restaurant page with webpack.",
+  "description": "To do list for Odin project.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,17 +11,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cowpatchmedia/webpack-restaurant.git"
+    "url": "git+https://github.com/cowpatchmedia/todo-list.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/cowpatchmedia/webpack-restaurant/issues"
+    "url": "https://github.com/cowpatchmedia/todo-list/issues"
   },
-  "homepage": "https://github.com/cowpatchmedia/webpack-restaurant#readme",
+  "homepage": "https://github.com/cowpatchmedia/todo-list#readme",
   "devDependencies": {
-    "webpack": "^5.102.1",
+    "webpack": "^5.103.0",
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
