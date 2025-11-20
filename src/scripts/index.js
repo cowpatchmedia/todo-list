@@ -1,12 +1,12 @@
-import { setHeaderTitle } from './header.js';
 import createProjectForm from "./projectForm.js";
 import createProjectCard from "./projectCard.js";
+import { setCurrentProject } from './currentProject.js';
+window.setCurrentProject = setCurrentProject;
 
 import "./../stylesheets/styles.css";
 import "./../stylesheets/modern-normalize.css";
 
 document.addEventListener('DOMContentLoaded', () => {
-  setHeaderTitle('todo list');
   const container = document.getElementById('project-container');
 
   // State to track what we are editing

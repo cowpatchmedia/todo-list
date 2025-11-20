@@ -179,6 +179,7 @@ select, input, textarea {
 
 /* --- Project Card --- */
 .project-card {
+    position: relative;
     background: #ffffff;
     border: 1px solid #eee;
     border-radius: 8px;
@@ -263,8 +264,56 @@ select, input, textarea {
     color: #d32f2f;
 }
 
+/* Added styles for the "Set Active" button */
+.set-active-btn {
+  margin-left: 8px;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1px solid #6b0f0f;
+  background: #fbf6ef;
+  color: #6b0f0f;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.set-active-btn:hover {
+  background: #6b0f0f;
+  color: #fbf6ef;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .main-container { flex-direction: column; }
     #left-container { flex: none; width: 100%; min-height: auto; }
+}
+
+.make-current-overlay {
+  display: none;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(123, 18, 18, 0.85);
+  color: #fffbe6;
+  font-weight: bold;
+  font-size: 1.1rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 10;
+  transition: opacity 0.2s;
+  padding-top: 40px;
+}
+
+.project-card:hover .make-current-overlay {
+  display: flex;
+}
+
+.active-project {
+  background: #fbf6ef;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  color: #6b0f0f;
 }

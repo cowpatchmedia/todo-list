@@ -9,14 +9,41 @@ export default function createProjectCard(initialData = {}, { onDelete } = {}) {
     card.innerHTML = '';
 
     // -- HEADER: Title --
-    // (Added this so you can see the project name)
+    // (Added this so user can see the project name)
     const title = document.createElement('h3');
     title.className = 'card-title';
     title.textContent = currentData.title || 'Untitled Project';
+    
     // specific styling for the title to look nice
     title.style.margin = '0 0 8px 0'; 
     title.style.fontSize = '1.1rem';
     title.style.color = '#6b0f0f';
+
+    // Add "Set Active" button next to the title
+    const setActiveButton = document.createElement('button');
+    setActiveButton.className = 'set-active-btn';
+    setActiveButton.textContent = 'Set Active';
+    setActiveButton.style.marginLeft = '8px';
+    setActiveButton.style.padding = '4px 8px';
+    setActiveButton.style.fontSize = '0.9rem';
+    setActiveButton.style.cursor = 'pointer';
+    setActiveButton.style.border = '1px solid #6b0f0f';
+    setActiveButton.style.background = '#fbf6ef';
+    setActiveButton.style.color = '#6b0f0f';
+    setActiveButton.style.borderRadius = '4px';
+
+    setActiveButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering card edit
+      if (typeof window.setCurrentProject === 'function') {
+        window.setCurrentProject(currentData);
+      }
+    });
+
+    const titleContainer = document.createElement('div');
+    titleContainer.style.display = 'flex';
+    titleContainer.style.alignItems = 'center';
+    titleContainer.appendChild(title);
+    titleContainer.appendChild(setActiveButton);
 
     const meta = document.createElement('div');
     meta.className = 'meta';
@@ -63,12 +90,18 @@ export default function createProjectCard(initialData = {}, { onDelete } = {}) {
     notes.textContent = currentData.notes || '';
 
     // Append order: Title -> Meta -> Notes
-    card.appendChild(title);
+    card.appendChild(titleContainer);
     card.appendChild(meta);
     card.appendChild(notes);
 
     // -- Events --
     
+    // Make current project.
+    makeCurrent.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setCurrentProject(currentData);
+    });
+
     // Delete
     del.addEventListener('click', (e) => {
       e.stopPropagation(); // Stop card click (edit)
@@ -86,6 +119,22 @@ export default function createProjectCard(initialData = {}, { onDelete } = {}) {
       console.log('Add task for:', currentData.title);
     });
   }
+
+  // Add overlay for "make current project?"
+  const makeCurrent = document.createElement('div');
+  makeCurrent.className = 'make-current-overlay';
+  makeCurrent.textContent = 'Make current project?';
+
+  // Show overlay only on hover
+  card.appendChild(makeCurrent);
+
+  // Overlay click: set as current project
+  makeCurrent.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent edit
+    if (typeof window.setCurrentProject === 'function') {
+      window.setCurrentProject(currentData);
+    }
+  });
 
   // Initial build
   build();
