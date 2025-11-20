@@ -28,28 +28,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Helper: Render Tasks ---
   const renderTasksForActiveProject = () => {
     const taskContainer = document.querySelector('.card-container');
-    if(!taskContainer) return;
-    
+    if (!taskContainer) return;
+
     taskContainer.innerHTML = ''; // Clear existing
-    
+
     if (!currentProject || !currentProject.tasks) return;
 
     currentProject.tasks.forEach((task) => {
-      const taskCard = createTaskCard(task, {
-        onEdit: (taskData) => handleTaskEdit(taskData),
-        onDelete: (cardEl) => {
-          // Remove from data
-          const idx = currentProject.tasks.findIndex(t => t.id === task.id);
-          if (idx > -1) currentProject.tasks.splice(idx, 1);
-          
-          // Remove from DOM
-          cardEl.remove();
-          
-          // Update Badge in Sidebar
-          updateProjectBadge(currentProject.id, currentProject.tasks.length);
+        const existingCard = taskContainer.querySelector(`.task-card[data-task-id="${task.id}"]`);
+        if (existingCard) {
+            // Update existing card
+            const taskCard = existingCard.__taskCardInstance;
+            if (taskCard) taskCard.update(task);
+        } else {
+            // Create new card
+            const taskCard = createTaskCard(task, {
+                onEdit: (taskData) => handleTaskEdit(taskData),
+                onDelete: (cardEl) => {
+                    // Remove from data
+                    const idx = currentProject.tasks.findIndex(t => t.id === task.id);
+                    if (idx > -1) currentProject.tasks.splice(idx, 1);
+
+                    // Remove from DOM
+                    cardEl.remove();
+
+                    // Update Badge in Sidebar
+                    updateProjectBadge(currentProject.id, currentProject.tasks.length);
+                }
+            });
+            taskContainer.appendChild(taskCard.element);
+            taskCard.element.__taskCardInstance = taskCard; // Store instance for updates
         }
-      });
-    taskContainer.appendChild(taskCard.element);
     });
   };
 

@@ -12,3 +12,5 @@ additional buttons in main container.
 dynamically change "todo list" to active project.
 
 task cards can't be edited. 
+
+task card titles and notes overflow container. 
