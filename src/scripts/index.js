@@ -1,6 +1,5 @@
 import createProjectForm from "./projectForm.js";
 import createProjectCard from "./projectCard.js";
-// Assuming setCurrentProject can handle 'null' to clear the screen
 import { setCurrentProject, currentProject } from './currentProject.js';
 window.setCurrentProject = setCurrentProject;
 
@@ -15,10 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentEditingCard = null;
 
   const handleFormSubmit = (formData) => {
+    const projectData = {
+      ...formData,
+      tasks: [], // Initialize tasks array for new projects
+    };
+
     if (currentEditingCard) {
-      
       // Update the card UI / Internal State
-      currentEditingCard.update(formData);
+      currentEditingCard.update(projectData);
 
       // Get the ID from the card we just edited
       const editedId = currentEditingCard.getData().id;
@@ -32,11 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentEditingCard = null;
     } else {
 
-      // Assign a Unique ID. This is crucial for tracking!
-      const newId = crypto.randomUUID();
-      const dataWithId = { ...formData, id: newId };
-
-      const newCard = createProjectCard(dataWithId, {
+      const newCard = createProjectCard(projectData, {
         onDelete: (cardElement) => {
 
           
