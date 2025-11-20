@@ -1,7 +1,7 @@
 /* --- Header --- */
 #header-container {
     display: flex;
-    justify-content: center; /* Centered title looks better usually, or flex-end */
+    justify-content: flex-end; /* Centered title or flex-end */
     align-items: center; 
     height: 56px; 
     position: sticky;
@@ -232,6 +232,7 @@ select, input, textarea {
     font-weight: bold;
     text-transform: uppercase;
 }
+
 /* Dynamic colors based on priority text */
 .priority-badge.priority-high { background: #ffebee; color: #c62828; }
 .priority-badge.priority-medium { background: #fff3e0; color: #ef6c00; }
@@ -276,7 +277,7 @@ select, input, textarea {
     color: #d32f2f;
 }
 
-/* Added styles for the "Set Active" button */
+/* styles for the "Set Active" button */
 .set-active-btn {
   margin-left: 8px;
   padding: 4px 8px;

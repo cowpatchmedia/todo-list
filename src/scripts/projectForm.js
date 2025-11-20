@@ -1,7 +1,7 @@
 import { el } from './domUtils.js';
 
 export default function createProjectForm(onSubmit = () => {}) {
-  // 1. Create DOM Elements using helper to reduce noise
+  // Create DOM Elements using helper to reduce noise
   const overlay = el('div', 'project-modal-overlay');
   const modal = el('div', 'project-modal');
   const header = el('div', 'modal-header');
@@ -109,8 +109,7 @@ export default function createProjectForm(onSubmit = () => {}) {
       textareaNotes.value = initialData.notes || '';
       addBtn.textContent = 'Update';
       
-      // Logic decision: Do you want to start in "View" mode or "Edit" mode?
-      // Usually, when editing, we show the H3.
+      // start in "Edit" mod?
       showDisplay(); 
     } else {
       // Create Mode
@@ -118,7 +117,7 @@ export default function createProjectForm(onSubmit = () => {}) {
       titleInput.value = '';
       displayTitle.textContent = 'New Project';
       addBtn.textContent = 'Add';
-      // Logic decision: New projects usually start with the title focused
+      // start with the title focused
       showInput(); 
     }
     document.body.appendChild(overlay);

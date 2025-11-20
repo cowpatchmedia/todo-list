@@ -20,9 +20,7 @@ export default function createProjectCard(initialData = {}, { onDelete } = {}) {
     const setActiveButton = document.createElement('button');
     setActiveButton.className = 'set-active-btn';
     setActiveButton.textContent = 'Set Active';
-    // ... (your existing styles) ...
     setActiveButton.style.marginLeft = '8px';
-    // ...
 
     setActiveButton.addEventListener('click', (e) => {
       e.stopPropagation(); 

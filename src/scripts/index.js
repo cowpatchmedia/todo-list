@@ -16,12 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const handleFormSubmit = (formData) => {
     if (currentEditingCard) {
-      // --- UPDATE EXISTING ---
       
-      // 1. Update the card UI / Internal State
+      // Update the card UI / Internal State
       currentEditingCard.update(formData);
 
-      // 2. Fix for Issue #1: Check ID instead of Title
       // Get the ID from the card we just edited
       const editedId = currentEditingCard.getData().id;
 
@@ -33,22 +31,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
       currentEditingCard = null;
     } else {
-      // --- CREATE NEW ---
 
-      // 1. Assign a Unique ID. This is crucial for tracking!
-      const newId = crypto.randomUUID(); // or Date.now().toString()
+      // Assign a Unique ID. This is crucial for tracking!
+      const newId = crypto.randomUUID();
       const dataWithId = { ...formData, id: newId };
 
       const newCard = createProjectCard(dataWithId, {
         onDelete: (cardElement) => {
-          // --- Fix for Issue #2: Handling Deletion ---
+
           
-          // 1. Remove from Sidebar (Left Panel)
+          // Remove from Sidebar (Left Panel)
           if (container.contains(cardElement)) {
             container.removeChild(cardElement);
           }
 
-          // 2. Check if this was the Active Project
+          // Check if this was the Active Project
           // We need to access the data of the card being deleted. 
           // Since 'newCard' is in the closure, we can use it.
           const deletedId = newCard.getData().id;
@@ -57,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Clear the main container
             mainDisplay.innerHTML = ''; 
             
-            // Optional: clear the global state variable
+            // clear the global state variable
             setCurrentProject(null); 
           }
         },
