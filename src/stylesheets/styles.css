@@ -37,7 +37,9 @@
 
 /* --- Sidebar --- */
 #left-container {
-    flex: 0 0 250px; /* Fixed width sidebar is often cleaner than % */
+    flex: 0 0 33.3%; /* Fix width to 33.3% of the parent container */
+    max-width: 33.3%; /* Prevent it from growing beyond 33.3% */
+    overflow: hidden; /* Hide any overflowing content */
     background: #fbf6ef; 
     padding: 16px;
     border-right: 1px solid rgba(0,0,0,0.06);
@@ -187,6 +189,10 @@ select, input, textarea {
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer; /* Indicates clickable for edit */
+    max-width: 100%; /* Prevent cards from exceeding the container's width */
+    box-sizing: border-box; /* Include padding and border in the element's width */
+    word-wrap: break-word; /* Break long words to prevent overflow */
+    overflow-wrap: break-word; /* Ensure wrapping for long unbroken text */
 }
 
 .project-card:hover {
@@ -198,6 +204,10 @@ select, input, textarea {
     margin: 0 0 12px 0;
     font-size: 1.1rem;
     color: #6b0f0f;
+    white-space: nowrap; /* Prevent the title from wrapping to a new line */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Add ellipsis for truncated text */
+    flex: 1; /* Allow the title to take up available space */
 }
 
 .meta {
@@ -239,10 +249,12 @@ select, input, textarea {
     line-height: 1.4;
     /* Limit notes to 2 lines with ellipsis */
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-line-clamp: 3; /* Limit to 3 lines */
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    max-height: 4.5em; /* Limit height to approximately 3 lines */
+    text-overflow: ellipsis; /* Add ellipsis for truncated text */
 }
 
 .card-actions button {
@@ -275,6 +287,7 @@ select, input, textarea {
   color: #6b0f0f;
   border-radius: 4px;
   transition: background 0.2s, color 0.2s;
+  flex-shrink: 0; /* Prevent the button from shrinking when the title is long */
 }
 
 .set-active-btn:hover {
