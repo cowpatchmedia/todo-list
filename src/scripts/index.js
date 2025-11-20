@@ -1,5 +1,6 @@
 import createProjectForm from "./projectForm.js";
 import createProjectCard from "./projectCard.js";
+
 import { setCurrentProject, currentProject } from './currentProject.js';
 window.setCurrentProject = setCurrentProject;
 
@@ -80,4 +81,48 @@ document.addEventListener('DOMContentLoaded', () => {
       form.open();
     });
   }
+
+  const handleAddTask = (projectData) => {
+    const taskForm = createTaskForm((taskData) => {
+      // Assign a unique ID to the new task
+      const taskId = `task-${Date.now()}`;
+      const newTask = { id: taskId, ...taskData };
+
+      // Add the task to the project's tasks array
+      projectData.tasks.push(newTask);
+
+      // Update the task count badge
+      const projectCard = document.querySelector(`[data-project-id="${projectData.id}"]`);
+      if (projectCard) {
+        const taskCountBadge = projectCard.querySelector('.task-count-badge');
+        if (taskCountBadge) {
+          taskCountBadge.textContent = `(${projectData.tasks.length})`;
+        }
+      }
+
+      // If the project is active, render the new task in the main container
+      if (currentProject && currentProject.id === projectData.id) {
+        const taskCard = createTaskCard(newTask, {
+          onEdit: (updatedTask) => {
+            const taskIndex = projectData.tasks.findIndex((task) => task.id === updatedTask.id);
+            if (taskIndex !== -1) {
+              projectData.tasks[taskIndex] = updatedTask;
+              renderTasksForActiveProject();
+            }
+          },
+          onDelete: (taskElement) => {
+            const taskIndex = projectData.tasks.findIndex((task) => task.id === newTask.id);
+            if (taskIndex !== -1) {
+              projectData.tasks.splice(taskIndex, 1);
+              taskElement.remove();
+              renderTasksForActiveProject();
+            }
+          },
+        });
+        document.querySelector('.card-container').appendChild(taskCard.element);
+      }
+    });
+
+    taskForm.open();
+  };
 });

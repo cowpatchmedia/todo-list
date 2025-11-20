@@ -1,4 +1,4 @@
-export default function createProjectCard(initialData = {}, { onDelete } = {}) {
+export default function createProjectCard(initialData = {}, { onDelete, onAddTask } = {}) {
   const card = document.createElement('div');
   card.className = 'project-card';
 
@@ -29,11 +29,30 @@ export default function createProjectCard(initialData = {}, { onDelete } = {}) {
       }
     });
 
+    // Task Count Badge
+    const taskCountBadge = document.createElement('span');
+    taskCountBadge.className = 'task-count-badge';
+    taskCountBadge.textContent = `(${currentData.tasks ? currentData.tasks.length : 0})`;
+
+    // Add Task Button
+    const addTaskButton = document.createElement('button');
+    addTaskButton.className = 'add-task-btn';
+    addTaskButton.textContent = '+';
+    addTaskButton.title = 'Add Task';
+    addTaskButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering card click
+      if (typeof onAddTask === 'function') {
+        onAddTask(currentData);
+      }
+    });
+
     const titleContainer = document.createElement('div');
     titleContainer.style.display = 'flex';
     titleContainer.style.alignItems = 'center';
     titleContainer.appendChild(title);
     titleContainer.appendChild(setActiveButton);
+    titleContainer.appendChild(taskCountBadge);
+    titleContainer.appendChild(addTaskButton);
 
     const meta = document.createElement('div');
     meta.className = 'meta';
