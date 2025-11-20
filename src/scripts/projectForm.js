@@ -1,4 +1,5 @@
 import { el } from './domUtils.js';
+import { validateForm } from './formUtils.js';
 
 export default function createProjectForm(onSubmit = () => {}) {
   // Create DOM Elements using helper to reduce noise
@@ -138,6 +139,11 @@ export default function createProjectForm(onSubmit = () => {}) {
       notes: textareaNotes.value
     };
     
+    if (!validateForm(form)) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
     onSubmit(formData);
     close();
   });

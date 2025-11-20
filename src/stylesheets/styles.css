@@ -1,3 +1,14 @@
+:root {
+    --primary-color: #800000; /* Maroon */
+    --secondary-color: #f5f5dc; /* Cream */
+    --font-color: #333333;
+    --font-family: 'Arial', sans-serif;
+    --spacing-small: 8px;
+    --spacing-medium: 16px;
+    --spacing-large: 24px;
+    --border-radius: 4px;
+}
+
 /* --- Header --- */
 #header-container {
     display: flex;
@@ -7,9 +18,9 @@
     position: sticky;
     top: 0;
     width: 100%;
-    background: #6b0f0f; /* Deep Maroon */
-    color: #fbf6ef; /* Cream */
-    padding: 0 24px;
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    padding: 0 var(--spacing-medium);
     box-shadow: 0 2px 6px rgba(0,0,0,0.12);
     z-index: 100;
     font-weight: 900;
@@ -29,8 +40,8 @@
 
 .main-container {
     display: flex;
-    gap: 24px;
-    padding: 24px;
+    gap: var(--spacing-medium);
+    padding: var(--spacing-medium);
     box-sizing: border-box;
     align-items: flex-start;
 }
@@ -41,7 +52,7 @@
     max-width: 33.3%; /* Prevent it from growing beyond 33.3% */
     overflow: hidden; /* Hide any overflowing content */
     background: #fbf6ef; 
-    padding: 16px;
+    padding: var(--spacing-small);
     border-right: 1px solid rgba(0,0,0,0.06);
     min-height: calc(100vh - 56px); /* Full height minus header */
 }
@@ -49,8 +60,8 @@
 #left-container nav {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: var(--spacing-small);
+    margin-bottom: var(--spacing-small);
 }
 
 #left-container nav button {
@@ -58,7 +69,7 @@
     background: #7a1212; 
     color: #fbf6ef;
     border: none;
-    padding: 10px 12px;
+    padding: var(--spacing-small) var(--spacing-medium);
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
@@ -79,8 +90,8 @@
 .card-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 16px;
-    padding: 20px;
+    gap: var(--spacing-small);
+    padding: var(--spacing-medium);
     align-items: start; /* Prevents cards from stretching vertically */
 }
 
@@ -99,13 +110,13 @@
     background: #fbf6ef;
     color: #2b1f1f;
     border-radius: 8px;
-    padding: 24px;
+    padding: var(--spacing-medium);
     width: 100%;
     max-width: 450px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.18);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--spacing-small);
 }
 
 .modal-header {
@@ -351,55 +362,40 @@ select, input, textarea {
   z-index: 1001;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .main-container { flex-direction: column; }
-    #left-container { flex: none; width: 100%; min-height: auto; }
+/* Card Styling */
+.card {
+    border: 2px solid var(--primary-color); /* Maroon border */
+    background-color: var(--secondary-color); /* Cream background */
+    color: var(--primary-color); /* Maroon text */
+    padding: var(--spacing-medium);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: var(--spacing-medium);
 }
 
-.make-current-overlay {
-  display: none;
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(123, 18, 18, 0.85);
-  color: #fffbe6;
-  font-weight: bold;
-  font-size: 1.1rem;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 10;
-  transition: opacity 0.2s;
-  padding-top: 40px;
+.card h3 {
+    margin: 0 0 var(--spacing-small) 0;
+    font-size: 1.25rem;
 }
 
-.project-card:hover .make-current-overlay {
-  display: flex;
-}
-
-.active-project {
-  background: #fbf6ef;
-  border-radius: 8px;
-  padding: 24px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-  color: #6b0f0f;
+.card p {
+    margin: 0;
+    font-size: 1rem;
 }
 
 /* Task Card Fixed Size */
 .task-card {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 16px;
-    height: 150px; /* Fixed height */
-    overflow: hidden; /* Hide overflow */
-    cursor: pointer;
+    border: 2px solid var(--primary-color); /* Maroon border */
+    background-color: var(--secondary-color); /* Cream background */
+    color: var(--primary-color); /* Maroon text */
+    padding: var(--spacing-medium);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: var(--spacing-medium);
     transition: all 0.3s ease;
     position: relative;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
 /* Hover effect */
 .task-card:hover {
     transform: translateY(-2px);
@@ -442,4 +438,57 @@ select, input, textarea {
     justify-content: center;
     font-size: 0.75rem;
     margin-left: auto; /* Push to right */
+}
+
+.make-current-overlay {
+  display: none;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(123, 18, 18, 0.85);
+  color: #fffbe6;
+  font-weight: bold;
+  font-size: 1.1rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 10;
+  transition: opacity 0.2s;
+  padding-top: 40px;
+}
+
+.project-card:hover .make-current-overlay {
+  display: flex;
+}
+
+.active-project {
+  background: #fbf6ef;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  color: #6b0f0f;
+}
+
+/* Task Card button styling */
+.task-card button {
+    background-color: transparent;
+    color: var(--primary-color); /* Maroon font */
+    border: 2px solid var(--primary-color); /* Maroon border */
+    border-radius: var(--border-radius); /* Rounded corners */
+    padding: var(--spacing-small) var(--spacing-medium);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.task-card button:hover {
+    background-color: var(--primary-color); /* Maroon background on hover */
+    color: var(--secondary-color); /* Cream text on hover */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-container { flex-direction: column; }
+    #left-container { flex: none; width: 100%; min-height: auto; }
 }

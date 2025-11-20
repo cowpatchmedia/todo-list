@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     taskContainer.appendChild(taskCard.element);
-    console.log('Appending task card:', taskCard.element);
     });
   };
 
@@ -74,9 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Add to project data
       targetProject.tasks.push(newTask);
-
-      console.log('Adding task to project:', targetProject);
-      console.log('Updated tasks:', targetProject.tasks);
 
       // Update Badge in Sidebar immediately
       updateProjectBadge(targetProject.id, targetProject.tasks.length);

@@ -7,4 +7,8 @@ add default project and task.
 
 add local storage. 
 
-additional buttons. 
+additional buttons in main container. 
+
+dynamically change "todo list" to active project.
+
+task cards can't be edited. 

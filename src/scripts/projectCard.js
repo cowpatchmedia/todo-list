@@ -1,3 +1,5 @@
+import { createButton, createCard } from './domUtils.js';
+
 export default function createProjectCard(initialData = {}, { onDelete, onAddTask } = {}) {
   const card = document.createElement('div');
   card.className = 'project-card';
@@ -56,30 +58,27 @@ export default function createProjectCard(initialData = {}, { onDelete, onAddTas
     actions.style.gap = '8px';
     actions.style.marginTop = '8px';
 
-    const setActiveButton = document.createElement('button');
-    setActiveButton.textContent = 'Open';
-    setActiveButton.className = 'btn-small'; // Add CSS for this if needed
-    setActiveButton.addEventListener('click', (e) => {
+    const setActiveButton = createButton('Open', 'btn-small', (e) => {
       e.stopPropagation(); 
       if (typeof window.setCurrentProject === 'function') {
         window.setCurrentProject(currentData);
       }
     });
 
-    const addTaskButton = document.createElement('button');
-    addTaskButton.className = 'add-task-btn';
-    addTaskButton.textContent = '+';
-    addTaskButton.title = 'Add New Task';
-    addTaskButton.addEventListener('click', (e) => {
+    const addTaskButton = createButton('+', 'add-task-btn', (e) => {
       e.stopPropagation(); 
       if (typeof onAddTask === 'function') {
         onAddTask(currentData);
       }
     });
+    addTaskButton.title = 'Add New Task';
 
-    const del = document.createElement('button');
-    del.className = 'card-delete';
-    del.textContent = '🗑️';
+    const del = createButton('🗑️', 'card-delete', (e) => {
+      e.stopPropagation(); 
+      if (typeof onDelete === 'function') {
+        onDelete(card); 
+      }
+    });
 
     actions.appendChild(setActiveButton);
     actions.appendChild(addTaskButton);
@@ -90,12 +89,6 @@ export default function createProjectCard(initialData = {}, { onDelete, onAddTas
     card.appendChild(actions);
 
     // Events
-    del.addEventListener('click', (e) => {
-      e.stopPropagation(); 
-      if (typeof onDelete === 'function') {
-        onDelete(card); 
-      }
-    });
   }
 
   build();
