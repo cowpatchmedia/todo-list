@@ -1,5 +1,277 @@
-nav {
+/* Header: full width at top */
+#header-container {
+    display: flex;
+    justify-content: flex-end; /* move child to right */
+    align-items: flex-start; /* align content to the top of the header */
+    padding: 12px 24px; /* adjust vertical padding as desired */
+    height: 56px; /* optional: set header height for consistent vertical placement */
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: #6b0f0f; /* deep maroon */
+    color: #fbf6ef; /* cream text */
+    padding: 16px 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    z-index: 100;
+    font-weight: 900;
+}
+
+/* Ensure the layout container doesn't constrain header width */
+.layout {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Stack buttons in the left sidebar: make them vertical and full width */
+#left-container nav {
     display: flex;
     flex-direction: column;
+    gap: 8px;
+    padding: 0;
+    margin: 0 0 16px 0;
+}
+
+#left-container nav button {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#header-container a {
+    text-decoration: none;
+    color: #fbf6ef; /* cream links on maroon header */
+    font-weight: 600;
+}
+
+/* sidebar: cream background and subtle right-side shadow to separate from content */
+#left-container {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+    box-sizing: border-box;
+    background: #fbf6ef; /* light cream */
+    padding: 16px;
+    /* subtle right border to separate sidebar from main content */
+    border-right: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Main 2-column layout below header */
+.main-container {
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    box-sizing: border-box;
+    align-items: flex-start;
+}
+
+/* Sidebar takes one-third of available width */
+#left-container nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+    margin: 0 0 16px 0;
+}
+
+/* maroon buttons with cream text */
+#left-container nav button {
+    width: 100%;
+    box-sizing: border-box;
+    background: #7a1212; /* slightly lighter maroon */
+    color: #fbf6ef;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#left-container nav button:hover {
+    background: #5a0b0b; /* darker on hover */
+}
+
+/* main content background (subtle contrast) */
+.content {
+    flex: 1 1 0%;
+    min-width: 0; /* prevents overflow on long children */
+    box-sizing: border-box;
+    background: #ffffff; /* keep content white for readability */
+    padding: 24px;
+}
+
+/* Small-screen responsiveness: stack columns */
+@media (max-width: 720px) {
+    .main-container {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+    }
+    #left-container {
+        flex: none;
+        max-width: none;
+        width: 100%;
+    }
+    .content {
+        width: 100%;
+    }
+}
+
+/* --- Project form modal & card styles --- */
+.project-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+.project-modal {
+    background: #fbf6ef; /* cream modal background */
+    color: #2b1f1f;
+    border-radius: 8px;
+    padding: 16px;
+    width: 420px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+    position: relative;
+}
+.project-modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.project-modal .modal-header h3 {
+    margin: 0;
+    color: #6b0f0f; /* maroon */
+    font-size: 1.05rem;
+}
+.project-modal .modal-header h3 {
+    cursor: text; /* indicate editable */
+}
+.modal-title-input {
+    display: none;
+    font-size: 1.05rem;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.12);
+}
+.project-modal .modal-close {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #6b0f0f;
+    cursor: pointer;
+}
+.project-modal .form-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.project-modal label {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: #2b1f1f;
+}
+.project-modal select,
+.project-modal input[type="date"],
+.project-modal textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #fff;
+    box-sizing: border-box;
+    font-size: 0.95rem;
+}
+.project-modal .form-row .form-group {
+    flex: 1;
+}
+.project-modal textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+.project-modal .actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+.project-modal .btn {
+    background: #7a1212;
+    color: #fbf6ef;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.project-modal .btn.secondary {
+    background: transparent;
+    color: #6b0f0f;
+    border: 1px solid rgba(0,0,0,0.06);
+    margin-right: 8px;
+}
+
+/* project card */
+.project-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 12px;
+    margin-bottom: 12px;
+}
+.project-card .meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.project-card .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.priority-badge {
+    background: #6b0f0f;
+    color: #fbf6ef;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+}
+.due-date {
+    font-size: 0.85rem;
+    color: #4b3b3b;
+}
+.project-card p {
+    margin: 0;
+    color: #2b1f1f;
+}
+
+/* actions on the right side of a card (plus then trash) */
+.card-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.card-actions .card-plus,
+.card-actions .card-delete {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 6px 8px;
+    border-radius: 6px;
+}
+.card-actions .card-plus {
+    color: #6b0f0f;
+    background: rgba(107,15,15,0.06);
+}
+.card-actions .card-delete {
+    color: #7a1212;
+}
+
+.card-plus.active {
+    transform: rotate(45deg);
 }
 

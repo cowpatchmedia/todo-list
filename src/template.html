@@ -3,23 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>haleys' cafe</title>
+    <title>todo list</title>
 </head>
 <body>
 
-    <div class = "layout">
+    <div class="layout">
 
-        <div id="header-containter"></div>
-
-        <div id="left-container">
-            <nav>
-                <button id="project-button">new project</button>
-                <button id="task-button">new task</button>
-            </nav>
-            <div id="project-container"></div>
+        <div id="header-container">
+            <div id="header-title">todo list</div>
         </div>
 
-        <div class="main-container"></div>
+        <div class="main-container">
+
+            <aside id="left-container">
+                <nav>
+                    <button id="project-button" type="button">new project</button>
+                    <button id="task-button" type="button">new task</button>
+                </nav>
+                <div id="project-container">
+                    <!-- project list / sidebar content -->
+                </div>
+            </aside>
+
+            <main class="content">
+                <!-- main content / card grid -->
+                <div class="card-container"></div>
+            </main>
+
+        </div>
 
     </div>
 
