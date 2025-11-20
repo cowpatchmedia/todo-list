@@ -1,4 +1,4 @@
-// domUtils.js (or top of projectForm.js)
+// domUtils.js - Utility functions for DOM manipulation
 export const el = (tag, classes = '', text = '', attributes = {}) => {
   const element = document.createElement(tag);
   if (classes) element.className = classes;

@@ -24,9 +24,6 @@ export default function createProjectForm(onSubmit = () => {}) {
 
   header.append(displayTitle, titleInput, closeBtn);
 
-  // -- Form Body --
-  // We removed the separate "Title" group because the Header IS the title now.
-  
   // Priority & Date Row
   const row1 = el('div', 'form-row');
   
