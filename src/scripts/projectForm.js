@@ -1,171 +1,148 @@
+import { el } from './domUtils.js';
+
 export default function createProjectForm(onSubmit = () => {}) {
-  // Returns an object with open(initialData) and close() methods.
-  const overlay = document.createElement('div');
-  overlay.className = 'project-modal-overlay';
-
-  const modal = document.createElement('div');
-  modal.className = 'project-modal';
-
-  // header
-  const header = document.createElement('div');
-  header.className = 'modal-header';
-  const h3 = document.createElement('h3');
-  h3.textContent = 'New Project';
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'modal-close';
-  closeBtn.setAttribute('aria-label', 'Close form');
-  closeBtn.textContent = '✕';
-  // make the header title keyboard-focusable and clickable to focus the form title field
-  h3.tabIndex = 0;
-  h3.setAttribute('role', 'button');
-  header.appendChild(h3);
-  header.appendChild(closeBtn);
-
-  // form body
-  const form = document.createElement('form');
-  form.className = 'project-form';
-  form.addEventListener('submit', (e) => e.preventDefault());
-
-  // title input shown above priority
-  const titleGroup = document.createElement('div');
-  titleGroup.className = 'form-group';
-  const titleLabel = document.createElement('label');
-  titleLabel.textContent = 'Title';
-  const titleField = document.createElement('input');
-  titleField.type = 'text';
-  titleField.name = 'title';
-  titleField.className = 'modal-title-input';
-  titleGroup.appendChild(titleLabel);
-  titleGroup.appendChild(titleField);
-
-  // row: priority + due date
-  const row1 = document.createElement('div');
-  row1.className = 'form-row';
-
-  const grpPriority = document.createElement('div');
-  grpPriority.className = 'form-group';
-  const labelPriority = document.createElement('label');
-  labelPriority.textContent = 'Priority';
-  const select = document.createElement('select');
-  select.name = 'priority';
-  ['low','medium','high','top'].forEach((val) => {
-    const opt = document.createElement('option');
-    opt.value = val;
-    opt.textContent = val.charAt(0).toUpperCase() + val.slice(1);
-    select.appendChild(opt);
+  // 1. Create DOM Elements using helper to reduce noise
+  const overlay = el('div', 'project-modal-overlay');
+  const modal = el('div', 'project-modal');
+  const header = el('div', 'modal-header');
+  const form = el('form', 'project-form');
+  
+  // -- Header Elements --
+  // The Display Title
+  const displayTitle = el('h3', 'modal-title-display', 'New Project');
+  displayTitle.tabIndex = 0; // Make focusable
+  
+  // The Editable Input (Hidden by default in CSS or via JS)
+  const titleInput = el('input', 'modal-title-input', '', { 
+    type: 'text', 
+    name: 'title', 
+    placeholder: 'Project Name' 
   });
-  grpPriority.appendChild(labelPriority);
-  grpPriority.appendChild(select);
+  titleInput.style.display = 'none'; // Initially hidden
 
-  const grpDate = document.createElement('div');
-  grpDate.className = 'form-group';
-  const labelDate = document.createElement('label');
-  labelDate.textContent = 'Due date';
-  const inputDate = document.createElement('input');
-  inputDate.type = 'date';
-  inputDate.name = 'dueDate';
-  grpDate.appendChild(labelDate);
-  grpDate.appendChild(inputDate);
+  const closeBtn = el('button', 'modal-close', '✕', { 'aria-label': 'Close' });
 
-  row1.appendChild(grpPriority);
-  row1.appendChild(grpDate);
+  header.append(displayTitle, titleInput, closeBtn);
 
-  // notes textarea
-  const notesGroup = document.createElement('div');
-  notesGroup.className = 'form-group';
-  const notesLabel = document.createElement('label');
-  notesLabel.textContent = 'Notes';
-  const textarea = document.createElement('textarea');
-  textarea.name = 'notes';
-  notesGroup.appendChild(notesLabel);
-  notesGroup.appendChild(textarea);
-
-  // actions
-  const actions = document.createElement('div');
-  actions.className = 'actions';
-  const cancelBtn = document.createElement('button');
-  cancelBtn.type = 'button';
-  cancelBtn.className = 'btn secondary';
-  cancelBtn.textContent = 'Cancel';
-  const addBtn = document.createElement('button');
-  addBtn.type = 'button';
-  addBtn.className = 'btn';
-  addBtn.textContent = 'Add';
-  actions.appendChild(cancelBtn);
-  actions.appendChild(addBtn);
-
-  form.appendChild(titleGroup);
-  form.appendChild(row1);
-  form.appendChild(notesGroup);
-  form.appendChild(actions);
-
-  modal.appendChild(header);
-  modal.appendChild(form);
-  overlay.appendChild(modal);
-
-  // events
-  function close() {
-    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-  }
-  function open(initialData = null) {
-    // populate fields if initialData provided
-    if (initialData) {
-      select.value = initialData.priority || 'low';
-      inputDate.value = initialData.dueDate || '';
-      textarea.value = initialData.notes || '';
-      h3.textContent = initialData.title || 'Edit Project';
-      titleField.value = initialData.title || '';
-      addBtn.textContent = initialData._isEdit ? 'Save' : 'Update';
-    } else {
-      // reset
-      select.value = 'low';
-      inputDate.value = '';
-      textarea.value = '';
-      h3.textContent = 'New Project';
-      titleField.value = '';
-      addBtn.textContent = 'Add';
-    }
-
-    document.body.appendChild(overlay);
-    // focus the first control asynchronously to avoid interfering
-    // with the original click event that opened the form.
-    setTimeout(() => select.focus(), 0);
-  }
-
-  closeBtn.addEventListener('click', close);
-  cancelBtn.addEventListener('click', close);
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) close();
+  // -- Form Body --
+  // We removed the separate "Title" group because the Header IS the title now.
+  
+  // Priority & Date Row
+  const row1 = el('div', 'form-row');
+  
+  const grpPriority = el('div', 'form-group');
+  const labelPriority = el('label', '', 'Priority');
+  const selectPriority = el('select', '', '', { name: 'priority' });
+  ['low', 'medium', 'high', 'top'].forEach(val => {
+    const opt = el('option', '', val.charAt(0).toUpperCase() + val.slice(1), { value: val });
+    selectPriority.appendChild(opt);
   });
+  grpPriority.append(labelPriority, selectPriority);
 
-  addBtn.addEventListener('click', () => {
-    const data = {
-      title: (titleField && titleField.value) ? titleField.value.trim() : '',
-      priority: select.value,
-      dueDate: inputDate.value || null,
-      notes: textarea.value || ''
-    };
-    try {
-      onSubmit(data);
-    } finally {
-      close();
-    }
-  });
-  // clicking the header (except the close button) focuses the title input
-  header.addEventListener('click', (e) => {
-    if (e.target === closeBtn) return;
-    e.stopPropagation();
-    titleField.focus();
-    titleField.select();
-  });
+  const grpDate = el('div', 'form-group');
+  const labelDate = el('label', '', 'Due Date');
+  const inputDate = el('input', '', '', { type: 'date', name: 'dueDate' });
+  grpDate.append(labelDate, inputDate);
 
-  // keyboard activation (Enter / Space) on the title element also focuses the input
-  h3.addEventListener('keydown', (e) => {
+  row1.append(grpPriority, grpDate);
+
+  // Notes
+  const grpNotes = el('div', 'form-group');
+  const labelNotes = el('label', '', 'Notes');
+  const textareaNotes = el('textarea', '', '', { name: 'notes' });
+  grpNotes.append(labelNotes, textareaNotes);
+
+  // Actions
+  const actions = el('div', 'actions');
+  const cancelBtn = el('button', 'btn secondary', 'Cancel', { type: 'button' });
+  const addBtn = el('button', 'btn', 'Add', { type: 'submit' }); // type submit triggers form event
+  actions.append(cancelBtn, addBtn);
+
+  // Assemble
+  form.append(row1, grpNotes, actions);
+  modal.append(header, form);
+  overlay.append(modal);
+
+  // -- Logic: Editable Title Switching --
+  const showInput = () => {
+    displayTitle.style.display = 'none';
+    titleInput.style.display = 'block';
+    titleInput.focus();
+  };
+
+  const showDisplay = () => {
+    // If input is empty, revert to default text
+    displayTitle.textContent = titleInput.value.trim() || 'New Project';
+    titleInput.style.display = 'none';
+    displayTitle.style.display = 'block';
+  };
+
+  displayTitle.addEventListener('click', showInput);
+  displayTitle.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      titleField.focus();
-      titleField.select();
+      showInput();
     }
+  });
+
+  // When leaving the input, switch back to H3
+  titleInput.addEventListener('blur', showDisplay);
+  // Allow pressing Enter in the title input to finish editing title (but not submit form yet)
+  titleInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      titleInput.blur();
+    }
+  });
+
+
+  // -- Logic: Open/Close --
+  const close = () => {
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    form.reset();
+  };
+
+  const open = (initialData = null) => {
+    if (initialData) {
+      // Edit Mode
+      titleInput.value = initialData.title || '';
+      displayTitle.textContent = initialData.title || 'New Project';
+      selectPriority.value = initialData.priority || 'low';
+      inputDate.value = initialData.dueDate || '';
+      textareaNotes.value = initialData.notes || '';
+      addBtn.textContent = 'Update';
+      
+      // Logic decision: Do you want to start in "View" mode or "Edit" mode?
+      // Usually, when editing, we show the H3.
+      showDisplay(); 
+    } else {
+      // Create Mode
+      form.reset();
+      titleInput.value = '';
+      displayTitle.textContent = 'New Project';
+      addBtn.textContent = 'Add';
+      // Logic decision: New projects usually start with the title focused
+      showInput(); 
+    }
+    document.body.appendChild(overlay);
+  };
+
+  // -- Events --
+  closeBtn.addEventListener('click', close);
+  cancelBtn.addEventListener('click', close);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+  
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = {
+      title: titleInput.value.trim() || 'New Project',
+      priority: selectPriority.value,
+      dueDate: inputDate.value,
+      notes: textareaNotes.value
+    };
+    
+    onSubmit(formData);
+    close();
   });
 
   return { open, close, element: overlay };

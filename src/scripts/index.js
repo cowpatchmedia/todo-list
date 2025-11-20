@@ -1,50 +1,53 @@
 import { setHeaderTitle } from './header.js';
-
 import createProjectForm from "./projectForm.js";
 import createProjectCard from "./projectCard.js";
-
 
 import "./../stylesheets/styles.css";
 import "./../stylesheets/modern-normalize.css";
 
 document.addEventListener('DOMContentLoaded', () => {
   setHeaderTitle('todo list');
+  const container = document.getElementById('project-container');
 
-  // create form and provide an onSubmit callback
-  let currentEdit = null; // holds card object when editing
+  // State to track what we are editing
+  let currentEditingCard = null;
 
-  const form = createProjectForm((data) => {
-    const container = document.getElementById('project-container');
-    if (!container) return;
+  const handleFormSubmit = (formData) => {
+    if (currentEditingCard) {
+      // 1. Update logic
+      currentEditingCard.update(formData); 
+      currentEditingCard = null; 
+    } else {
+      // 2. Create logic
+      const newCard = createProjectCard(formData, {
+        onDelete: (cardElement) => cardElement.remove()
+      });
 
-    if (currentEdit) {
-      // update existing card
-      currentEdit.update(data);
-      currentEdit = null;
-      return;
+      // Bind the click event HERE
+      newCard.element.addEventListener('click', (e) => {
+        // Prevent triggering if we clicked a delete button inside the card
+        if (e.target.closest('.delete-btn') || e.target.closest('.actions')) return;
+
+        currentEditingCard = newCard;
+        
+        // CRITICAL FIX: Get the *current* data from the card object
+        // You must ensure createProjectCard returns an object with a getData() method
+        const currentData = newCard.getData(); 
+        
+        form.open({ ...currentData, _isEdit: true });
+      });
+
+      container.appendChild(newCard.element);
     }
+  };
 
-    // create new card
-    const cardObj = createProjectCard(data, {
-      onDelete: (el) => {
-        if (el && el.parentNode) el.parentNode.removeChild(el);
-      }
-    });
+  const form = createProjectForm(handleFormSubmit);
 
-    // clicking the card (not the actions) should open the form to edit
-    cardObj.element.addEventListener('click', (e) => {
-      // ignore if clicking action buttons (they stopPropagation already)
-      currentEdit = cardObj;
-      // open form prefilled for editing
-      form.open({ priority: data.priority, dueDate: data.dueDate, notes: data.notes, _isEdit: true });
-    });
-
-    container.appendChild(cardObj.element);
-  });
-
-  // wire the button to open the form
   const projectButton = document.getElementById('project-button');
   if (projectButton) {
-    projectButton.addEventListener('click', () => form.open());
+    projectButton.addEventListener('click', () => {
+      currentEditingCard = null; // Ensure we are in "Create" mode
+      form.open();
+    });
   }
 });
