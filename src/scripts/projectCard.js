@@ -1,27 +1,64 @@
 export default function createProjectCard(initialData = {}, { onDelete, onAddTask } = {}) {
   const card = document.createElement('div');
   card.className = 'project-card';
-
-  // Store data. Ensure ID exists (passed from index.js)
+  
+  // Store data
   let currentData = { ...initialData };
+  
+  // dd ID to the DOM element for easy lookup
+  card.dataset.id = currentData.id;
 
   function build() {
     card.innerHTML = '';
 
-    // -- HEADER: Title --
+    // Title
     const title = document.createElement('h3');
     title.className = 'card-title';
     title.textContent = currentData.title || 'Untitled Project';
-    title.style.margin = '0 0 8px 0'; 
+    title.style.margin = '0'; 
     title.style.fontSize = '1.1rem';
     title.style.color = '#6b0f0f';
 
-    // "Set Active" button
-    const setActiveButton = document.createElement('button');
-    setActiveButton.className = 'set-active-btn';
-    setActiveButton.textContent = 'Set Active';
-    setActiveButton.style.marginLeft = '8px';
+    // Task Count Badge (Circle)
+    const taskCountBadge = document.createElement('span');
+    taskCountBadge.className = 'task-count-badge';
+    // Ensure tasks exists before checking length
+    const count = currentData.tasks ? currentData.tasks.length : 0;
+    taskCountBadge.textContent = count;
 
+    // Header Row
+    const headerRow = document.createElement('div');
+    headerRow.style.display = 'flex';
+    headerRow.style.alignItems = 'center';
+    headerRow.style.justifyContent = 'space-between';
+    headerRow.style.marginBottom = '8px';
+    headerRow.style.gap = '8px';
+    
+    headerRow.appendChild(title);
+    headerRow.appendChild(taskCountBadge);
+
+    // Priority & Date
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.style.marginBottom = '8px';
+    meta.style.fontSize = '0.85rem';
+
+    const badge = document.createElement('span');
+    badge.className = `priority-badge priority-${currentData.priority || 'low'}`;
+    badge.textContent = (currentData.priority || 'Low');
+    
+    meta.appendChild(badge);
+
+    // Actions Row
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+    actions.style.display = 'flex';
+    actions.style.gap = '8px';
+    actions.style.marginTop = '8px';
+
+    const setActiveButton = document.createElement('button');
+    setActiveButton.textContent = 'Open';
+    setActiveButton.className = 'btn-small'; // Add CSS for this if needed
     setActiveButton.addEventListener('click', (e) => {
       e.stopPropagation(); 
       if (typeof window.setCurrentProject === 'function') {
@@ -29,89 +66,35 @@ export default function createProjectCard(initialData = {}, { onDelete, onAddTas
       }
     });
 
-    // Task Count Badge
-    const taskCountBadge = document.createElement('span');
-    taskCountBadge.className = 'task-count-badge';
-    taskCountBadge.textContent = `(${currentData.tasks ? currentData.tasks.length : 0})`;
-
-    // Add Task Button
     const addTaskButton = document.createElement('button');
     addTaskButton.className = 'add-task-btn';
     addTaskButton.textContent = '+';
-    addTaskButton.title = 'Add Task';
+    addTaskButton.title = 'Add New Task';
     addTaskButton.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent triggering card click
+      e.stopPropagation(); 
       if (typeof onAddTask === 'function') {
         onAddTask(currentData);
       }
     });
 
-    const titleContainer = document.createElement('div');
-    titleContainer.style.display = 'flex';
-    titleContainer.style.alignItems = 'center';
-    titleContainer.appendChild(title);
-    titleContainer.appendChild(setActiveButton);
-    titleContainer.appendChild(taskCountBadge);
-    titleContainer.appendChild(addTaskButton);
-
-    const meta = document.createElement('div');
-    meta.className = 'meta';
-
-    const left = document.createElement('div');
-    left.className = 'meta-left';
-
-    const badge = document.createElement('span');
-    badge.className = `priority-badge priority-${currentData.priority || 'low'}`;
-    badge.textContent = (currentData.priority || 'Low');
-    badge.textContent = badge.textContent.charAt(0).toUpperCase() + badge.textContent.slice(1);
-
-    const due = document.createElement('span');
-    due.className = 'due-date';
-    due.textContent = currentData.dueDate ? new Date(currentData.dueDate).toLocaleDateString() : 'No due date';
-
-    left.appendChild(badge);
-    left.appendChild(due);
-
-    const actions = document.createElement('div');
-    actions.className = 'card-actions';
-
-    const plus = document.createElement('button');
-    plus.type = 'button';
-    plus.className = 'card-plus';
-    plus.textContent = '+';
-
     const del = document.createElement('button');
-    del.type = 'button';
-    del.className = 'card-delete'; // Ensure this class matches index.js checks
+    del.className = 'card-delete';
     del.textContent = '🗑️';
 
-    actions.appendChild(plus);
+    actions.appendChild(setActiveButton);
+    actions.appendChild(addTaskButton);
     actions.appendChild(del);
 
-    meta.appendChild(left);
-    meta.appendChild(actions);
-
-    const notes = document.createElement('p');
-    notes.className = 'card-notes';
-    notes.textContent = currentData.notes || '';
-
-    card.appendChild(titleContainer);
+    card.appendChild(headerRow);
     card.appendChild(meta);
-    card.appendChild(notes);
+    card.appendChild(actions);
 
-    // -- Events --
-    
+    // Events
     del.addEventListener('click', (e) => {
       e.stopPropagation(); 
-      // We rely entirely on the callback passed from index.js
       if (typeof onDelete === 'function') {
         onDelete(card); 
       }
-    });
-
-    plus.addEventListener('click', (e) => {
-      e.stopPropagation();
-      plus.classList.toggle('active');
     });
   }
 
@@ -120,9 +103,9 @@ export default function createProjectCard(initialData = {}, { onDelete, onAddTas
   return {
     element: card,
     update(newData = {}) {
-      // Important: Preserve the ID when updating!
-      // newData usually comes from form, which might not have the ID.
       currentData = { ...currentData, ...newData };
+      // Update dataset ID in case it changed
+      card.dataset.id = currentData.id; 
       build();
     },
     getData() {

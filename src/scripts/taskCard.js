@@ -1,76 +1,74 @@
 export default function createTaskCard(taskData = {}, { onEdit, onDelete } = {}) {
   const card = document.createElement('div');
   card.className = 'task-card';
+  // Add ID to DOM
+  card.dataset.taskId = taskData.id;
 
-  // Store task data
   let currentData = { ...taskData };
 
   function build() {
     card.innerHTML = '';
 
-    // Title
+    const header = document.createElement('div');
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.alignItems = 'start';
+    header.style.marginBottom = '8px';
+
     const title = document.createElement('h4');
     title.className = 'task-title';
     title.textContent = currentData.title || 'Untitled Task';
+    title.style.margin = '0';
 
-    // Priority Badge
     const priorityBadge = document.createElement('span');
     priorityBadge.className = `task-priority priority-${currentData.priority || 'low'}`;
     priorityBadge.textContent = currentData.priority || 'Low';
 
-    // Due Date
-    const dueDate = document.createElement('span');
-    dueDate.className = 'task-due-date';
-    dueDate.textContent = currentData.dueDate ? new Date(currentData.dueDate).toLocaleDateString() : 'No due date';
+    header.append(title, priorityBadge);
 
-    // Notes (hidden by default)
+    const dueDate = document.createElement('div');
+    dueDate.className = 'task-due-date';
+    dueDate.style.fontSize = '0.85rem';
+    dueDate.style.color = '#666';
+    dueDate.textContent = currentData.dueDate ? `Due: ${new Date(currentData.dueDate).toLocaleDateString()}` : 'No due date';
+
     const notes = document.createElement('p');
     notes.className = 'task-notes';
-    notes.textContent = currentData.notes || '';
-    notes.style.display = 'none';
+    notes.textContent = currentData.notes || 'No notes provided.';
+    notes.style.marginTop = '10px';
+    notes.style.fontSize = '0.9rem';
 
-    // Expand/Collapse Button
-    const expandButton = document.createElement('button');
-    expandButton.className = 'task-expand';
-    expandButton.textContent = 'Expand';
-    expandButton.addEventListener('click', () => {
-      const isExpanded = notes.style.display === 'block';
-      notes.style.display = isExpanded ? 'none' : 'block';
-      expandButton.textContent = isExpanded ? 'Expand' : 'Collapse';
-    });
-
-    // Edit Button
-    const editButton = document.createElement('button');
-    editButton.className = 'task-edit';
-    editButton.textContent = 'Edit';
-    editButton.addEventListener('click', () => {
-      if (typeof onEdit === 'function') {
-        onEdit(currentData);
-      }
-    });
-
-    // Delete Button
-    const deleteButton = document.createElement('button');
-    deleteButton.className = 'task-delete';
-    deleteButton.textContent = 'Delete';
-    deleteButton.addEventListener('click', () => {
-      if (typeof onDelete === 'function') {
-        onDelete(card);
-      } else {
-        card.remove();
-      }
-    });
-
-    // Actions Container
+    // Actions
     const actions = document.createElement('div');
     actions.className = 'task-actions';
+    actions.style.marginTop = '15px';
+    actions.style.display = 'flex';
+    actions.style.gap = '10px';
+
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent card expansion
+      if (typeof onEdit === 'function') onEdit(currentData);
+    });
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent card expansion
+      if (typeof onDelete === 'function') onDelete(card);
+    });
+
     actions.append(editButton, deleteButton);
 
-    // Append elements to card
-    card.append(title, priorityBadge, dueDate, notes, expandButton, actions);
+    card.append(header, dueDate, notes, actions);
+
+    // Toggle Expand on Card Click
+    card.addEventListener('click', () => {
+      card.classList.toggle('expanded');
+    });
   }
 
-  // Initial build
   build();
 
   return {
@@ -79,8 +77,6 @@ export default function createTaskCard(taskData = {}, { onEdit, onDelete } = {})
       currentData = { ...currentData, ...newData };
       build();
     },
-    getData() {
-      return currentData;
-    },
+    getData() { return currentData; }
   };
 }

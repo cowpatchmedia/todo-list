@@ -1,6 +1,6 @@
 import { el } from './domUtils.js';
 
-export function createTaskForm(onSubmit = () => {}) {
+export default function createTaskForm(onSubmit = () => {}) {
   // Create DOM Elements
   const overlay = el('div', 'task-modal-overlay');
   const modal = el('div', 'task-modal');
@@ -111,7 +111,7 @@ export function createTaskForm(onSubmit = () => {}) {
       addBtn.textContent = 'Add';
       showInput();
     }
-    document.body.appendChild(overlay);
+    document.body.appendChild(overlay); // Append overlay to body for proper positioning
   };
 
   // -- Events --

@@ -78,8 +78,10 @@
 
 .card-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 16px;
+    padding: 20px;
+    align-items: start; /* Prevents cards from stretching vertically */
 }
 
 /* --- Project Modal --- */
@@ -324,6 +326,31 @@ select, input, textarea {
   display: block; /* Ensure it behaves as a block element */
 }
 
+/* Task Modal Overlay */
+.task-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Task Modal */
+.task-modal {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  z-index: 1001;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .main-container { flex-direction: column; }
@@ -358,4 +385,61 @@ select, input, textarea {
   padding: 24px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   color: #6b0f0f;
+}
+
+/* Task Card Fixed Size */
+.task-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    height: 150px; /* Fixed height */
+    overflow: hidden; /* Hide overflow */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+/* Hover effect */
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Expanded State (Clicked) */
+.task-card.expanded {
+    height: auto; /* Grow to fit content */
+    min-height: 150px;
+    z-index: 10;
+    border-color: #6b0f0f;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    overflow: visible;
+}
+
+/* Task Priority Badges */
+.task-priority {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+.priority-low { background: #e8f5e9; color: #2e7d32; }
+.priority-medium { background: #fff3e0; color: #ef6c00; }
+.priority-high { background: #ffebee; color: #c62828; }
+
+/* Project Card Badge */
+.task-count-badge {
+    background-color: #6b0f0f;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    margin-left: auto; /* Push to right */
 }
