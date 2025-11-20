@@ -1,4 +1,4 @@
-let currentProject = null;
+export let currentProject = null;
 
 export function setCurrentProject(projectData) {
   currentProject = projectData;
@@ -15,7 +15,9 @@ export function renderCurrentProject() {
     <div class="active-project">
       <h2>${currentProject.title}</h2>
       <p><strong>Priority:</strong> ${currentProject.priority}</p>
-      <p><strong>Due Date:</strong> ${currentProject.dueDate}</p>
+      <p><strong>Due Date:</strong> ${
+        currentProject.dueDate ? new Date(currentProject.dueDate).toLocaleDateString() : 'No due date'
+      }</p>
       <p><strong>Notes:</strong> ${currentProject.notes}</p>
     </div>
   `;

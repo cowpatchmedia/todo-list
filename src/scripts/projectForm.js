@@ -131,6 +131,7 @@ export default function createProjectForm(onSubmit = () => {}) {
   
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    
     const formData = {
       title: titleInput.value.trim() || 'New Project',
       priority: selectPriority.value,

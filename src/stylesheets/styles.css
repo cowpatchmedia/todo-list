@@ -295,6 +295,34 @@ select, input, textarea {
   color: #fbf6ef;
 }
 
+/* Ensure long titles and notes wrap properly in the active project view */
+.active-project {
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  word-wrap: break-word; /* Break long words to prevent overflow */
+  overflow-wrap: break-word; /* Ensure wrapping for long unbroken text */
+  max-width: 100%; /* Prevent horizontal scrolling */
+  box-sizing: border-box; /* Include padding and borders in width calculation */
+}
+
+.active-project h2 {
+  width: 100%; /* Ensure title takes up full width of the container */
+  white-space: normal; /* Allow wrapping to a new line */
+}
+
+.active-project p {
+  width: 100%; /* Ensure notes take up full width of the container */
+  white-space: normal; /* Allow wrapping to a new line */
+}
+
+/* Ensure the title in the project form does not overflow the form container */
+.modal-title-display {
+  white-space: nowrap; /* Prevent the title from wrapping to a new line */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis for truncated text */
+  display: block; /* Ensure it behaves as a block element */
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .main-container { flex-direction: column; }
