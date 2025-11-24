@@ -5,6 +5,7 @@ import createTaskCard from "./taskCard.js";
 import { setCurrentProject, currentProject } from './currentProject.js';
 import { updateProjectBadge, renderTasksForActiveProject } from './uiManager.js';
 import { createEventHandlers } from './eventHandlers.js';
+import { createProject, addTaskToProject } from './dataManager.js';
 
 // Ensure global access for the 'Set Active' button in projectCard
 window.setCurrentProject = setCurrentProject;
@@ -37,4 +38,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   setupGlobalListeners();
+
+  // Create default project if none exist
+  if (sidebarContainer.children.length === 0) {
+    const defaultProject = createProject({
+      title: "Clean Kitchen",
+      priority: "low",
+      dueDate: new Date().toISOString().split('T')[0], // today's date
+      notes: ""
+    });
+
+    addTaskToProject(defaultProject, {
+      title: "turn off the stove",
+      priority: "high",
+      dueDate: new Date().toISOString().split('T')[0],
+      notes: "did I remember to turn off the stove before I left??"
+    });
+
+    const card = createProjectCard(defaultProject, {
+      onDelete: (cardElement) => {
+        if (sidebarContainer.contains(cardElement)) {
+          sidebarContainer.removeChild(cardElement);
+        }
+        if (currentProject && currentProject.id === defaultProject.id) {
+          document.querySelector('.card-container').innerHTML = '';
+          setCurrentProject(null);
+        }
+      },
+      onAddTask: (dataOfThisCard) => handleAddTask(dataOfThisCard)
+    });
+
+    sidebarContainer.appendChild(card.element);
+
+    // Set as active project
+    setCurrentProject(defaultProject);
+  }
 });

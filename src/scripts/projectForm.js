@@ -8,6 +8,8 @@ export default function createProjectForm(onSubmit = () => {}) {
   const header = el('div', 'modal-header');
   const form = el('form', 'project-form');
   
+  let savedContent = '';
+  
   // -- Header Elements --
   // The Display Title
   const displayTitle = el('h3', 'modal-title-display', 'New Project');
@@ -96,11 +98,25 @@ export default function createProjectForm(onSubmit = () => {}) {
 
   // -- Logic: Open/Close --
   const close = () => {
-    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    const activeProject = document.querySelector('.active-project');
+    if (activeProject && activeProject.contains(modal)) {
+      activeProject.innerHTML = savedContent;
+    } else {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }
     form.reset();
   };
 
   const open = (initialData = null) => {
+    const activeProject = document.querySelector('.active-project');
+    if (activeProject) {
+      savedContent = activeProject.innerHTML;
+      activeProject.innerHTML = '';
+      activeProject.appendChild(modal);
+    } else {
+      document.body.appendChild(overlay);
+    }
+
     if (initialData) {
       // Edit Mode
       titleInput.value = initialData.title || '';
@@ -121,7 +137,6 @@ export default function createProjectForm(onSubmit = () => {}) {
       // start with the title focused
       showInput(); 
     }
-    document.body.appendChild(overlay);
   };
 
   // -- Events --
