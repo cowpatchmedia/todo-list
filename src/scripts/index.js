@@ -3,6 +3,8 @@ import createProjectCard from "./projectCard.js";
 import createTaskForm from "./taskForm.js";
 import createTaskCard from "./taskCard.js";
 import { setCurrentProject, currentProject } from './currentProject.js';
+import { updateProjectBadge, renderTasksForActiveProject } from './uiManager.js';
+import { createEventHandlers } from './eventHandlers.js';
 
 // Ensure global access for the 'Set Active' button in projectCard
 window.setCurrentProject = setCurrentProject;
@@ -13,180 +15,26 @@ import "./../stylesheets/modern-normalize.css";
 document.addEventListener('DOMContentLoaded', () => {
   const sidebarContainer = document.getElementById('project-container'); 
 
-  let currentEditingCard = null;
+  const { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm } = createEventHandlers({ sidebarContainer, setCurrentProject });
 
   // --- Helper: Update Sidebar Badge ---
-  const updateProjectBadge = (projectId, count) => {
-    // Find the specific project card in the sidebar using the data-id we added
-    const card = sidebarContainer.querySelector(`.project-card[data-id="${projectId}"]`);
-    if (card) {
-      const badge = card.querySelector('.task-count-badge');
-      if (badge) badge.textContent = count;
-    }
-  };
+  // Moved to uiManager.js
 
   // --- Helper: Render Tasks ---
-  const renderTasksForActiveProject = () => {
-    const taskContainer = document.querySelector('.card-container');
-    if (!taskContainer) return;
-
-    // Instead of clearing the entire DOM, update existing cards and add new ones
-    const existingCards = new Map();
-    taskContainer.querySelectorAll('.task-card').forEach(card => {
-      const taskId = card.dataset.taskId;
-      existingCards.set(taskId, card);
-    });
-
-    if (!currentProject || !currentProject.tasks) return;
-
-    currentProject.tasks.forEach((task) => {
-      const existingCard = existingCards.get(task.id);
-      if (existingCard) {
-        // Update existing card using its stored instance
-        const taskCardInstance = existingCard.__taskCardInstance;
-        if (taskCardInstance) {
-          taskCardInstance.update(task);
-        }
-        existingCards.delete(task.id); // Mark as processed
-      } else {
-        // Create new card
-        const taskCard = createTaskCard(task, {
-          onEdit: (taskData) => handleTaskEdit(taskData),
-          onDelete: (cardEl) => {
-            // Remove from data
-            const idx = currentProject.tasks.findIndex(t => t.id === task.id);
-            if (idx > -1) currentProject.tasks.splice(idx, 1);
-
-            // Remove from DOM
-            cardEl.remove();
-
-            // Update Badge in Sidebar
-            updateProjectBadge(currentProject.id, currentProject.tasks.length);
-          }
-        });
-        taskContainer.appendChild(taskCard.element);
-        taskCard.element.__taskCardInstance = taskCard; // Store instance for future updates
-      }
-    });
-
-    // Remove any cards that are no longer in the tasks array
-    existingCards.forEach(card => card.remove());
-  };
+  // Moved to uiManager.js
 
   // Override the imported setCurrentProject to add rendering logic
   // (We are wrapping the original to trigger a UI refresh)
   const originalSetCurrentProject = window.setCurrentProject;
   window.setCurrentProject = (projectData) => {
     originalSetCurrentProject(projectData); // Call original to set state
-    renderTasksForActiveProject(); // Then render tasks
-  };
-
-  // --- Task Handlers ---
-
-  const handleAddTask = (targetProject) => {
-    const taskForm = createTaskForm((taskData) => {
-      const taskId = `task-${Date.now()}`;
-      const newTask = { id: taskId, ...taskData };
-
-      // Initialize tasks array if missing
-      if (!targetProject.tasks) targetProject.tasks = [];
-      
-      // Add to project data
-      targetProject.tasks.push(newTask);
-
-      // Update Badge in Sidebar immediately
-      updateProjectBadge(targetProject.id, targetProject.tasks.length);
-
-      // If we added a task to the CURRENTLY active project, show it
-      if (currentProject && currentProject.id === targetProject.id) {
-        renderTasksForActiveProject();
-      }
-    });
-    taskForm.open();
-  };
-
-  const handleTaskEdit = (originalTask) => {
-    const taskForm = createTaskForm((updatedData) => {
-      // Find the task in the current project's tasks array and update it
-      const taskIndex = currentProject.tasks.findIndex(t => t.id === originalTask.id);
-      if (taskIndex !== -1) {
-        Object.assign(currentProject.tasks[taskIndex], updatedData);
-      }
-      // Re-render
-      renderTasksForActiveProject();
-    });
-    // Open form with existing data
-    taskForm.open(originalTask);
+    renderTasksForActiveProject(sidebarContainer, currentProject, createTaskCard, handleTaskEdit); // Then render tasks
   };
 
 
-  // --- Project Handlers ---
 
-  const handleProjectSubmit = (formData) => {
-    if (currentEditingCard) {
-      // Update existing
-      currentEditingCard.update(formData);
-      // If active, update view
-      if (currentProject && currentProject.id === currentEditingCard.getData().id) {
-        window.setCurrentProject(currentEditingCard.getData());
-      }
-      currentEditingCard = null;
-    } else {
-      // Create New
-      const newId = crypto.randomUUID();
-      const projectData = { ...formData, id: newId, tasks: [] };
 
-      const newCard = createProjectCard(projectData, {
-        onDelete: (cardElement) => {
-          if (sidebarContainer.contains(cardElement)) {
-            sidebarContainer.removeChild(cardElement);
-          }
-          const mainDisplay = document.querySelector('.card-container'); // Ensure mainDisplay is accessible
-          if (currentProject && currentProject.id === newId) {
-            mainDisplay.innerHTML = ''; // Clear the main display
-            originalSetCurrentProject(null);
-          }
-        },
-        // FIX: We pass the callback here!
-        onAddTask: (dataOfThisCard) => handleAddTask(dataOfThisCard)
-      });
 
-      newCard.element.addEventListener('click', (e) => {
-        // Don't edit if clicking action buttons
-        if (e.target.closest('button')) return;
-        
-        currentEditingCard = newCard;
-        const currentData = newCard.getData();
-        projectForm.open({ ...currentData, _isEdit: true });
-      });
 
-      sidebarContainer.appendChild(newCard.element);
-    }
-  };
-
-  const projectForm = createProjectForm(handleProjectSubmit);
-
-  // --- Global Button Listeners ---
-
-  // 1. New Project Button
-  const projectButton = document.getElementById('project-button');
-  if (projectButton) {
-    projectButton.addEventListener('click', () => {
-      currentEditingCard = null;
-      projectForm.open();
-    });
-  }
-
-  // 2. New Task Button (Sidebar Header)
-  // FIX: Corrected ID selector
-  const sidebarAddTaskBtn = document.getElementById('task-button');
-  if (sidebarAddTaskBtn) {
-    sidebarAddTaskBtn.addEventListener('click', () => {
-      if (currentProject) {
-        handleAddTask(currentProject);
-      } else {
-        alert("Please select or create a project first!");
-      }
-    });
-  }
+  setupGlobalListeners();
 });

@@ -11,4 +11,8 @@ additional buttons in main container.
 
 dynamically change "todo list" to active project.
 
+refractor index. 
+
+when editing a project, the project must be selected again for the tasks to appear. 
+
 task card titles and notes overflow container. 
