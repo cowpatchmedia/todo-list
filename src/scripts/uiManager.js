@@ -1,5 +1,7 @@
 // uiManager.js - Handles UI rendering and updates
 
+import { deleteTaskFromProject } from './dataManager.js';
+
 // Function to update the project badge in the sidebar
 export function updateProjectBadge(sidebarContainer, projectId, count) {
   const card = sidebarContainer.querySelector(`.project-card[data-id="${projectId}"]`);
@@ -37,9 +39,8 @@ export function renderTasksForActiveProject(sidebarContainer, currentProject, cr
       const taskCard = createTaskCard(task, {
         onEdit: handleTaskEdit,
         onDelete: (cardEl) => {
-          // Remove from data (will be handled by dataManager)
-          const idx = currentProject.tasks.findIndex(t => t.id === task.id);
-          if (idx > -1) currentProject.tasks.splice(idx, 1);
+          // Remove from data
+          deleteTaskFromProject(currentProject, task.id);
 
           // Remove from DOM
           cardEl.remove();

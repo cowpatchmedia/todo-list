@@ -6,6 +6,7 @@ import createProjectCard from './projectCard.js';
 import createTaskCard from './taskCard.js';
 import { currentProject } from './currentProject.js';
 import { updateProjectBadge, renderTasksForActiveProject } from './uiManager.js';
+import { addTaskToProject, updateTaskInProject, deleteTaskFromProject, createProject } from './dataManager.js';
 
 export const createEventHandlers = (dependencies) => {
   const { sidebarContainer, setCurrentProject } = dependencies;
@@ -14,14 +15,7 @@ export const createEventHandlers = (dependencies) => {
 
   const handleAddTask = (targetProject) => {
     const taskForm = createTaskForm((taskData) => {
-      const taskId = `task-${Date.now()}`;
-      const newTask = { id: taskId, ...taskData };
-
-      // Initialize tasks array if missing
-      if (!targetProject.tasks) targetProject.tasks = [];
-
-      // Add to project data
-      targetProject.tasks.push(newTask);
+      const newTask = addTaskToProject(targetProject, taskData);
 
       // Update Badge in Sidebar immediately
       updateProjectBadge(sidebarContainer, targetProject.id, targetProject.tasks.length);
@@ -32,15 +26,9 @@ export const createEventHandlers = (dependencies) => {
       }
     });
     taskForm.open();
-  };
-
-  const handleTaskEdit = (originalTask) => {
+  };  const handleTaskEdit = (originalTask) => {
     const taskForm = createTaskForm((updatedData) => {
-      // Find the task in the current project's tasks array and update it
-      const taskIndex = currentProject.tasks.findIndex(t => t.id === originalTask.id);
-      if (taskIndex !== -1) {
-        Object.assign(currentProject.tasks[taskIndex], updatedData);
-      }
+      updateTaskInProject(currentProject, originalTask.id, updatedData);
       // Re-render
       renderTasksForActiveProject(sidebarContainer, currentProject, createTaskCard, handleTaskEdit);
     });
@@ -58,15 +46,14 @@ export const createEventHandlers = (dependencies) => {
       }
     } else {
       // Create New
-      const newId = crypto.randomUUID();
-      const projectData = { ...formData, id: newId, tasks: [] };
+      const projectData = createProject(formData);
 
       const newCard = createProjectCard(projectData, {
         onDelete: (cardElement) => {
         if (sidebarContainer.contains(cardElement)) {
           sidebarContainer.removeChild(cardElement);
         }
-        if (currentProject && currentProject.id === newId) {
+        if (currentProject && currentProject.id === projectData.id) {
           document.querySelector('.card-container').innerHTML = ''; // Clear the main display
           setCurrentProject(null);
         }
