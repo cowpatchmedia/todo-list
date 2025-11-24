@@ -30,36 +30,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskContainer = document.querySelector('.card-container');
     if (!taskContainer) return;
 
-    taskContainer.innerHTML = ''; // Clear existing
+    // Instead of clearing the entire DOM, update existing cards and add new ones
+    const existingCards = new Map();
+    taskContainer.querySelectorAll('.task-card').forEach(card => {
+      const taskId = card.dataset.taskId;
+      existingCards.set(taskId, card);
+    });
 
     if (!currentProject || !currentProject.tasks) return;
 
     currentProject.tasks.forEach((task) => {
-        const existingCard = taskContainer.querySelector(`.task-card[data-task-id="${task.id}"]`);
-        if (existingCard) {
-            // Update existing card
-            const taskCard = existingCard.__taskCardInstance;
-            if (taskCard) taskCard.update(task);
-        } else {
-            // Create new card
-            const taskCard = createTaskCard(task, {
-                onEdit: (taskData) => handleTaskEdit(taskData),
-                onDelete: (cardEl) => {
-                    // Remove from data
-                    const idx = currentProject.tasks.findIndex(t => t.id === task.id);
-                    if (idx > -1) currentProject.tasks.splice(idx, 1);
-
-                    // Remove from DOM
-                    cardEl.remove();
-
-                    // Update Badge in Sidebar
-                    updateProjectBadge(currentProject.id, currentProject.tasks.length);
-                }
-            });
-            taskContainer.appendChild(taskCard.element);
-            taskCard.element.__taskCardInstance = taskCard; // Store instance for updates
+      const existingCard = existingCards.get(task.id);
+      if (existingCard) {
+        // Update existing card using its stored instance
+        const taskCardInstance = existingCard.__taskCardInstance;
+        if (taskCardInstance) {
+          taskCardInstance.update(task);
         }
+        existingCards.delete(task.id); // Mark as processed
+      } else {
+        // Create new card
+        const taskCard = createTaskCard(task, {
+          onEdit: (taskData) => handleTaskEdit(taskData),
+          onDelete: (cardEl) => {
+            // Remove from data
+            const idx = currentProject.tasks.findIndex(t => t.id === task.id);
+            if (idx > -1) currentProject.tasks.splice(idx, 1);
+
+            // Remove from DOM
+            cardEl.remove();
+
+            // Update Badge in Sidebar
+            updateProjectBadge(currentProject.id, currentProject.tasks.length);
+          }
+        });
+        taskContainer.appendChild(taskCard.element);
+        taskCard.element.__taskCardInstance = taskCard; // Store instance for future updates
+      }
     });
+
+    // Remove any cards that are no longer in the tasks array
+    existingCards.forEach(card => card.remove());
   };
 
   // Override the imported setCurrentProject to add rendering logic
@@ -96,8 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const handleTaskEdit = (originalTask) => {
     const taskForm = createTaskForm((updatedData) => {
-      // Merge updates
-      Object.assign(originalTask, updatedData);
+      // Find the task in the current project's tasks array and update it
+      const taskIndex = currentProject.tasks.findIndex(t => t.id === originalTask.id);
+      if (taskIndex !== -1) {
+        Object.assign(currentProject.tasks[taskIndex], updatedData);
+      }
       // Re-render
       renderTasksForActiveProject();
     });
