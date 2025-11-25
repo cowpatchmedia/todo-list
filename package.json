@@ -7,7 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack serve --open --config webpack.dev.js",
-    "deploy": "git subtree push --prefix dist origin gh-pages"
+    "deploy": "git subtree push --prefix dist origin gh-pages",
+    "branch": "git checkout -b feature-branch",
+    "delete": "git branch -d feature-branch",
+    "merge": "git checkout main && git merge feature-branch"
   },
   "repository": {
     "type": "git",
