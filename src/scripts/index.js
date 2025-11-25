@@ -16,7 +16,7 @@ import "./../stylesheets/modern-normalize.css";
 document.addEventListener('DOMContentLoaded', () => {
   const sidebarContainer = document.getElementById('project-container'); 
 
-  const { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm } = createEventHandlers({ sidebarContainer, setCurrentProject });
+  const { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm, registerCard } = createEventHandlers({ sidebarContainer, setCurrentProject });
 
   // --- Helper: Update Sidebar Badge ---
   // Moved to uiManager.js
@@ -70,7 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sidebarContainer.appendChild(card.element);
 
-    // Set as active project
-    setCurrentProject(defaultProject);
+    // wire default card with same behavior (edit/open)
+    if (typeof registerCard === 'function') registerCard(card);
+
+    // Set as active project (use global wrapper)
+    if (typeof window.setCurrentProject === 'function') window.setCurrentProject(defaultProject);
   }
 });

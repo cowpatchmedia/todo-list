@@ -13,6 +13,17 @@ export const createEventHandlers = (dependencies) => {
 
   let currentEditingCard = null;
 
+  // Register a card created outside this module so it gets the same click behavior
+  const registerCard = (cardInstance) => {
+    if (!cardInstance || !cardInstance.element) return;
+    cardInstance.element.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      currentEditingCard = cardInstance;
+      const currentData = cardInstance.getData();
+      projectForm.open({ ...currentData, _isEdit: true });
+    });
+  };
+
   const handleAddTask = (targetProject) => {
     const taskForm = createTaskForm((taskData) => {
       const newTask = addTaskToProject(targetProject, taskData);
@@ -42,7 +53,8 @@ export const createEventHandlers = (dependencies) => {
       currentEditingCard.update(formData);
       // If active, update view
       if (currentProject && currentProject.id === currentEditingCard.getData().id) {
-        setCurrentProject(currentEditingCard.getData());
+        // Use the global wrapper so UI refresh runs consistently
+        if (typeof window.setCurrentProject === 'function') window.setCurrentProject(currentEditingCard.getData());
       }
     } else {
       // Create New
@@ -55,20 +67,14 @@ export const createEventHandlers = (dependencies) => {
         }
         if (currentProject && currentProject.id === projectData.id) {
           document.querySelector('.card-container').innerHTML = ''; // Clear the main display
-          setCurrentProject(null);
+          if (typeof window.setCurrentProject === 'function') window.setCurrentProject(null);
         }
       },
         onAddTask: (dataOfThisCard) => handleAddTask(dataOfThisCard)
       });
 
-      newCard.element.addEventListener('click', (e) => {
-        // Don't edit if clicking action buttons
-        if (e.target.closest('button')) return;
-
-        currentEditingCard = newCard;
-        const currentData = newCard.getData();
-        projectForm.open({ ...currentData, _isEdit: true });
-      });
+      // wire the card up consistently
+      registerCard(newCard);
 
       sidebarContainer.appendChild(newCard.element);
     }
@@ -99,5 +105,5 @@ export const createEventHandlers = (dependencies) => {
     }
   };
 
-  return { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm };
+  return { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm, registerCard };
 };

@@ -396,6 +396,31 @@ select, input, textarea {
     position: relative;
 }
 
+/* Ensure task card content can shrink inside grid/flex layouts and wrap long text */
+.task-card {
+    min-width: 0; /* allow the card to shrink inside grid columns */
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Header title inside task card should wrap and truncate correctly */
+.task-card .task-title {
+    margin: 0;
+    font-size: 1rem;
+    white-space: normal; /* allow wrapping */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    flex: 1 1 auto;
+    min-width: 0; /* important for flex children to be allowed to shrink */
+}
+
+.task-card .task-notes {
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
 /* Hover effect */
 .task-card:hover {
     transform: translateY(-2px);
