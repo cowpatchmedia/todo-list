@@ -16,12 +16,25 @@ export const createEventHandlers = (dependencies) => {
   // Register a card created outside this module so it gets the same click behavior
   const registerCard = (cardInstance) => {
     if (!cardInstance || !cardInstance.element) return;
+    // store reference for later lookup
+    cardInstance.element.__projectCardInstance = cardInstance;
     cardInstance.element.addEventListener('click', (e) => {
       if (e.target.closest('button')) return;
       currentEditingCard = cardInstance;
       const currentData = cardInstance.getData();
       projectForm.open({ ...currentData, _isEdit: true });
     });
+  };
+
+  // Open the project form for an existing project by its id (find registered card)
+  const openProjectEditById = (projectId) => {
+    if (!projectId) return;
+    const el = sidebarContainer.querySelector(`.project-card[data-id="${projectId}"]`);
+    if (!el) return;
+    const instance = el.__projectCardInstance;
+    if (!instance) return;
+    currentEditingCard = instance;
+    projectForm.open({ ...instance.getData(), _isEdit: true });
   };
 
   const handleAddTask = (targetProject) => {
@@ -105,5 +118,5 @@ export const createEventHandlers = (dependencies) => {
     }
   };
 
-  return { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm, registerCard };
+  return { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm, registerCard, openProjectEditById };
 };

@@ -105,6 +105,12 @@ export default function createProjectForm(onSubmit = () => {}) {
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
     }
     form.reset();
+    // Notify others that the project form closed so they can re-bind UI handlers
+    try {
+      document.dispatchEvent(new CustomEvent('projectFormClosed'));
+    } catch (e) {
+      // ignore in older browsers
+    }
   };
 
   const open = (initialData = null) => {

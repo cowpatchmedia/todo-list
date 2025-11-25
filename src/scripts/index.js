@@ -16,7 +16,7 @@ import "./../stylesheets/modern-normalize.css";
 document.addEventListener('DOMContentLoaded', () => {
   const sidebarContainer = document.getElementById('project-container'); 
 
-  const { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm, registerCard } = createEventHandlers({ sidebarContainer, setCurrentProject });
+  const { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm, registerCard, openProjectEditById } = createEventHandlers({ sidebarContainer, setCurrentProject });
 
   // --- Helper: Update Sidebar Badge ---
   // Moved to uiManager.js
@@ -30,6 +30,34 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setCurrentProject = (projectData) => {
     originalSetCurrentProject(projectData); // Call original to set state
     renderTasksForActiveProject(sidebarContainer, currentProject, createTaskCard, handleTaskEdit); // Then render tasks
+    // Wire active-project action buttons (edit/add/delete)
+    const activeEdit = document.querySelector('.active-project .active-edit-btn');
+    const activeAdd = document.querySelector('.active-project .active-addtask-btn');
+    const activeDel = document.querySelector('.active-project .active-delete-btn');
+
+    if (activeEdit) {
+      activeEdit.onclick = () => {
+        if (typeof openProjectEditById === 'function' && currentProject) openProjectEditById(currentProject.id);
+      };
+    }
+    if (activeAdd) {
+      activeAdd.onclick = () => {
+        if (currentProject) handleAddTask(currentProject);
+      };
+    }
+    if (activeDel) {
+      activeDel.onclick = () => {
+        if (!currentProject) return;
+        const sidebarCard = sidebarContainer.querySelector(`.project-card[data-id="${currentProject.id}"]`);
+        if (sidebarCard) {
+          const delBtn = sidebarCard.querySelector('.card-delete');
+          if (delBtn) delBtn.click();
+        } else {
+          // fallback: clear active view
+          if (typeof window.setCurrentProject === 'function') window.setCurrentProject(null);
+        }
+      };
+    }
   };
 
 
@@ -38,6 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   setupGlobalListeners();
+
+  // Re-bind active-project action buttons after the project form closes
+  document.addEventListener('projectFormClosed', () => {
+    if (typeof window.setCurrentProject === 'function') window.setCurrentProject(currentProject);
+  });
 
   // Create default project if none exist
   if (sidebarContainer.children.length === 0) {

@@ -495,6 +495,43 @@ select, input, textarea {
   color: #6b0f0f;
 }
 
+/* Active project header actions (Edit / Add / Delete) */
+.active-project-header {
+    display: flex;
+    align-items: start;
+    gap: 12px;
+    justify-content: space-between;
+}
+
+.active-project-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Make the active-project buttons visually consistent with other .btn styles */
+.active-project-actions .btn {
+    padding: 6px 10px;
+    font-size: 0.95rem;
+    border-radius: 6px;
+}
+
+.active-project-actions .btn,
+.active-project-actions .btn.secondary {
+    /* Make all action buttons maroon with cream text by default */
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.active-project-actions .btn:hover,
+.active-project-actions .btn.secondary:hover {
+    /* On hover switch to cream background and maroon text */
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
 /* Task Card button styling */
 .task-card button {
     background-color: transparent;
