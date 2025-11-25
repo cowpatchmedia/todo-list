@@ -47,6 +47,8 @@ export function renderTasksForActiveProject(sidebarContainer, currentProject, cr
 
           // Update Badge
           updateProjectBadge(sidebarContainer, currentProject.id, currentProject.tasks.length);
+          // Notify app that data changed so persistence can run
+          try { document.dispatchEvent(new CustomEvent('dataChanged')); } catch (e) { /* ignore */ }
         }
       });
       taskContainer.appendChild(taskCard.element);

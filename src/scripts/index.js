@@ -5,6 +5,7 @@ import createTaskCard from "./taskCard.js";
 import { setCurrentProject, currentProject } from './currentProject.js';
 import { updateProjectBadge, renderTasksForActiveProject } from './uiManager.js';
 import { createEventHandlers } from './eventHandlers.js';
+import { load, saveDebounced } from './storageManager.js';
 import { createProject, addTaskToProject } from './dataManager.js';
 
 // Ensure global access for the 'Set Active' button in projectCard
@@ -16,7 +17,10 @@ import "./../stylesheets/modern-normalize.css";
 document.addEventListener('DOMContentLoaded', () => {
   const sidebarContainer = document.getElementById('project-container'); 
 
-  const { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm, registerCard, openProjectEditById } = createEventHandlers({ sidebarContainer, setCurrentProject });
+  // Shared in-memory projects array (will be populated from storage if available)
+  const allProjects = [];
+
+  const { handleAddTask, handleTaskEdit, handleProjectSubmit, setupGlobalListeners, projectForm, registerCard, openProjectEditById } = createEventHandlers({ sidebarContainer, setCurrentProject, projects: allProjects });
 
   // --- Helper: Update Sidebar Badge ---
   // Moved to uiManager.js
@@ -67,9 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setupGlobalListeners();
 
-
-  // Create default project if none exist
-  if (sidebarContainer.children.length === 0) {
+  // Load persisted projects (if any)
+  const persisted = load();
+  if (persisted && Array.isArray(persisted) && persisted.length > 0) {
+    // Preserve the same array reference so eventHandlers can mutate it
+    allProjects.push(...persisted);
+  } else {
+    // Create a sensible default when no persisted data exists
     const defaultProject = createProject({
       title: "Clean Kitchen",
       priority: "low",
@@ -84,25 +92,35 @@ document.addEventListener('DOMContentLoaded', () => {
       notes: "did I remember to turn off the stove before I left??"
     });
 
-    const card = createProjectCard(defaultProject, {
+    allProjects.push(defaultProject);
+  }
+
+  // Render all projects into the sidebar
+  allProjects.forEach((p) => {
+    const card = createProjectCard(p, {
       onDelete: (cardElement) => {
-        if (sidebarContainer.contains(cardElement)) {
-          sidebarContainer.removeChild(cardElement);
+        if (sidebarContainer.contains(cardElement)) sidebarContainer.removeChild(cardElement);
+        const idx = allProjects.findIndex(x => x.id === p.id);
+        if (idx > -1) allProjects.splice(idx, 1);
+        if (currentProject && currentProject.id === p.id) {
+          const container = document.querySelector('.card-container');
+          if (container) container.innerHTML = '';
+          if (typeof window.setCurrentProject === 'function') window.setCurrentProject(null);
         }
-        if (currentProject && currentProject.id === defaultProject.id) {
-          document.querySelector('.card-container').innerHTML = '';
-          setCurrentProject(null);
-        }
+        try { document.dispatchEvent(new CustomEvent('dataChanged')); } catch (e) {}
       },
       onAddTask: (dataOfThisCard) => handleAddTask(dataOfThisCard)
     });
-
-    sidebarContainer.appendChild(card.element);
-
-    // wire default card with same behavior (edit/open)
+    // Ensure consistent behavior
     if (typeof registerCard === 'function') registerCard(card);
+    sidebarContainer.appendChild(card.element);
+  });
 
-    // Set as active project (use global wrapper)
-    if (typeof window.setCurrentProject === 'function') window.setCurrentProject(defaultProject);
+  // Activate first project if available
+  if (allProjects.length > 0 && typeof window.setCurrentProject === 'function') {
+    window.setCurrentProject(allProjects[0]);
   }
+
+  // Persist on data changes (debounced)
+  document.addEventListener('dataChanged', () => saveDebounced(allProjects));
 });

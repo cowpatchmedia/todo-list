@@ -9,7 +9,7 @@ import { updateProjectBadge, renderTasksForActiveProject } from './uiManager.js'
 import { addTaskToProject, updateTaskInProject, deleteTaskFromProject, createProject } from './dataManager.js';
 
 export const createEventHandlers = (dependencies) => {
-  const { sidebarContainer, setCurrentProject } = dependencies;
+  const { sidebarContainer, setCurrentProject, projects } = dependencies;
 
   let currentEditingCard = null;
 
@@ -48,6 +48,8 @@ export const createEventHandlers = (dependencies) => {
       if (currentProject && currentProject.id === targetProject.id) {
         renderTasksForActiveProject(sidebarContainer, currentProject, createTaskCard, handleTaskEdit);
       }
+      // Notify app that data changed so persistence can run
+      try { document.dispatchEvent(new CustomEvent('dataChanged')); } catch (e) {}
     });
     taskForm.open();
   };  const handleTaskEdit = (originalTask) => {
@@ -55,6 +57,8 @@ export const createEventHandlers = (dependencies) => {
       updateTaskInProject(currentProject, originalTask.id, updatedData);
       // Re-render
       renderTasksForActiveProject(sidebarContainer, currentProject, createTaskCard, handleTaskEdit);
+      // Persist change
+      try { document.dispatchEvent(new CustomEvent('dataChanged')); } catch (e) {}
     });
     // Open form with existing data
     taskForm.open(originalTask);
@@ -78,10 +82,16 @@ export const createEventHandlers = (dependencies) => {
         if (sidebarContainer.contains(cardElement)) {
           sidebarContainer.removeChild(cardElement);
         }
+        // remove from projects list if provided
+        if (projects && Array.isArray(projects)) {
+          const idx = projects.findIndex(p => p.id === projectData.id);
+          if (idx > -1) projects.splice(idx, 1);
+        }
         if (currentProject && currentProject.id === projectData.id) {
           document.querySelector('.card-container').innerHTML = ''; // Clear the main display
           if (typeof window.setCurrentProject === 'function') window.setCurrentProject(null);
         }
+        try { document.dispatchEvent(new CustomEvent('dataChanged')); } catch (e) {}
       },
         onAddTask: (dataOfThisCard) => handleAddTask(dataOfThisCard)
       });
@@ -90,6 +100,10 @@ export const createEventHandlers = (dependencies) => {
       registerCard(newCard);
 
       sidebarContainer.appendChild(newCard.element);
+
+      // add to projects array if present
+      if (projects && Array.isArray(projects)) projects.push(projectData);
+      try { document.dispatchEvent(new CustomEvent('dataChanged')); } catch (e) {}
     }
   };
 
