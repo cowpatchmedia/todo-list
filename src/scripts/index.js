@@ -67,10 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setupGlobalListeners();
 
-  // Re-bind active-project action buttons after the project form closes
-  document.addEventListener('projectFormClosed', () => {
-    if (typeof window.setCurrentProject === 'function') window.setCurrentProject(currentProject);
-  });
 
   // Create default project if none exist
   if (sidebarContainer.children.length === 0) {

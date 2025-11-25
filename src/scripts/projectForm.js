@@ -8,7 +8,7 @@ export default function createProjectForm(onSubmit = () => {}) {
   const header = el('div', 'modal-header');
   const form = el('form', 'project-form');
   
-  let savedContent = '';
+  // Note: modal is appended to body to avoid replacing page DOM
   
   // -- Header Elements --
   // The Display Title
@@ -98,30 +98,13 @@ export default function createProjectForm(onSubmit = () => {}) {
 
   // -- Logic: Open/Close --
   const close = () => {
-    const activeProject = document.querySelector('.active-project');
-    if (activeProject && activeProject.contains(modal)) {
-      activeProject.innerHTML = savedContent;
-    } else {
-      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-    }
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
     form.reset();
-    // Notify others that the project form closed so they can re-bind UI handlers
-    try {
-      document.dispatchEvent(new CustomEvent('projectFormClosed'));
-    } catch (e) {
-      // ignore in older browsers
-    }
   };
 
   const open = (initialData = null) => {
-    const activeProject = document.querySelector('.active-project');
-    if (activeProject) {
-      savedContent = activeProject.innerHTML;
-      activeProject.innerHTML = '';
-      activeProject.appendChild(modal);
-    } else {
-      document.body.appendChild(overlay);
-    }
+    // Always append overlay to body to keep page DOM intact
+    if (!overlay.parentNode) document.body.appendChild(overlay);
 
     if (initialData) {
       // Edit Mode
